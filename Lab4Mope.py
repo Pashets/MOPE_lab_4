@@ -13,6 +13,8 @@ y_max = 200 + x_average_max
 y_min = 200 + x_average_min
 
 m, n = 3, 4
+print(ord('ŷ'))
+print('ŷ = b0 + b1*x1 + b2*x2 + b3*x3 + b12*x1*x2 + b13*x1*x3 + b23*x2*x3 + b123*x1*x2*x3')
 
 
 def main(m, n):
