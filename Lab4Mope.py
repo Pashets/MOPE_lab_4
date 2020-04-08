@@ -1,4 +1,5 @@
 import numpy as np
+from prettytable import PrettyTable
 
 x1_min = -20
 x1_max = 15
@@ -12,19 +13,25 @@ x_average_min = (x1_min + x2_min + x3_min) / 3
 y_max = 200 + x_average_max
 y_min = 200 + x_average_min
 
-m, n = 3, 4
-print(ord('ŷ'))
-print('ŷ = b0 + b1*x1 + b2*x2 + b3*x3 + b12*x1*x2 + b13*x1*x3 + b23*x2*x3 + b123*x1*x2*x3')
-
 
 def main(m, n):
     print("\nMatrix of code values")
-    norm_x = np.array([
+    norm_x = [
         [+1, -1, -1, -1],
         [+1, -1, +1, +1],
         [+1, +1, -1, +1],
-        [+1, +1, +1, -1]
-    ])
+        [+1, +1, +1, -1],
+        [+1, -1, -1, +1],
+        [+1, -1, +1, -1],
+        [+1, +1, -1, -1],
+        [+1, +1, +1, +1]
+    ]
+
+    for i in range(len(norm_x)):
+        norm_x[i].append(norm_x[i][1] * norm_x[i][2])
+        norm_x[i].append(norm_x[i][1] * norm_x[i][3])
+        norm_x[i].append(norm_x[i][2] * norm_x[i][3])
+        norm_x[i].append(norm_x[i][1] * norm_x[i][2] * norm_x[i][3])
     for i in range(len(norm_x)):
         print("{}.".format(i + 1), end="")
         for j in range(len(norm_x[i])):
@@ -32,13 +39,21 @@ def main(m, n):
         print()
 
     print("\nX-matrix:")
-    x = np.array([
+    x = [
         [x1_min, x2_min, x3_min],
         [x1_min, x2_max, x3_max],
         [x1_max, x2_min, x3_max],
-        [x1_max, x2_max, x3_min]
-    ])
-
+        [x1_max, x2_max, x3_min],
+        [x1_min, x2_min, x3_max],
+        [x1_min, x2_max, x3_min],
+        [x1_max, x2_min, x3_min],
+        [x1_max, x2_max, x3_max]
+    ]
+    for i in range(len(x)):
+        x[i].append(x[i][0] * x[i][1])
+        x[i].append(x[i][0] * x[i][2])
+        x[i].append(x[i][1] * x[i][2])
+        x[i].append(x[i][0] * x[i][1] * x[i][2])
     for i in range(len(x)):
         print("{}.".format(i + 1), end="")
         for j in range(len(x[i])):
@@ -47,12 +62,24 @@ def main(m, n):
 
     print("\nY-matrix:")
     y = np.random.randint(y_min, y_max, size=(n, m))
+    print(y)
+    # for i in range(len(y)):
+    #     print(f"y[{i}] = {y[i]:.3f}")
 
     print("\nAverage of the response features:")
-    y_av = np.sum(y, axis=1) / len(y[0])
-    y_1, y_2, y_3, y_4 = y_av
-    print(f"y_1 = {y_1:.2f}\ny_2 = {y_2:.2f}\ny_3 = {y_3:.2f}\ny_4 = {y_4:.2f}")
-    mx_1, mx_2, mx_3 = [i / len(x) for i in np.sum(x, axis=0)]
+    y_av = list(np.average(y, axis=1))
+    for i in range(len(y_av)):
+        y_av[i] = round(y_av[i], 3)
+    t = PrettyTable()
+    t.field_names = ['N', 'norm_x_0', 'norm_x_1', 'norm_x_2', 'norm_x_3', 'norm_x_1_x_2', 'norm_x_1_x_3',
+                     'norm_x_2_x_3', 'norm_x_1_x_2_x_3', 'x_1', 'x_2', 'x_3', 'x_1_x_2', 'x_1_x_3', 'x_2_x_3',
+                     'x_1_x_2_x_3', 'y_1', 'y_2', 'y_3',
+                     'y_av']
+    for i in range(n):
+        t.add_row([i + 1] + list(norm_x[i]) + list(x[i]) + list(y[i]) + [y_av[i]])
+    print(t)
+
+    # mx_1, mx_2, mx_3 = [i / len(x) for i in np.sum(x, axis=0)]
     my = sum(y_av) / len(y_av)
 
     a_1 = sum([x[i][0] * y_av[i] for i in range(len(x))]) / len(x)
@@ -97,6 +124,7 @@ def main(m, n):
     print("\n[ Kohren's test ]")
     f_1 = m - 1
     f_2 = n
+    s_i = [sum([(i - y_av[i]) ** 2 for i in y[i]])]
     s_1 = sum([(i - y_1) ** 2 for i in y[0]]) / m
     s_2 = sum([(i - y_2) ** 2 for i in y[1]]) / m
     s_3 = sum([(i - y_3) ** 2 for i in y[2]]) / m
@@ -178,5 +206,7 @@ def main(m, n):
         print(f"fP = {fP} < fT = {fT[f3][f_4]}.\nThe mathematical model is adequate to the experimental data\n")
 
 
-print("\nRegression equation --- y = b_0 + b_1 * x1 + b_1 * x2 +b_3 * x3")
+m, n = 3, 8
+print(ord('ŷ'))
+print('ŷ = b0 + b1 * x1 + b2 * x2 + b3 * x3 + b12 * x1 * x2 + b13 * x1 * x3 + b23 * x2 * x3 + b123 * x1 * x2 * x3')
 main(m, n)
