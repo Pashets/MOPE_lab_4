@@ -17,6 +17,7 @@ y_min = 200 + x_average_min
 
 
 def replace_column(list_: list, column, list_replace):
+    # Звичайне присвоювання лише копіює посилання на об'єкт, тому при зміні копії змінюється і сам об'єкт. За допомогою deepcopy я створюю окремий об'єкт, який я можу спокійно змінювати, не змінюючи оригінал.
     list_ = deepcopy(list_)
     for i in range(len(list_)):
         list_[i][column] = list_replace[i]
